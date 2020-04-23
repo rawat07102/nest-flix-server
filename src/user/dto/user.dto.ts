@@ -1,11 +1,17 @@
 export class UserDTO {
-  _id: string;
+  id: string;
   username: string;
   email: string;
+  likedMovies?: string[];
 }
 
 export class CreateUserDTO {
-  username: UserDTO['username'];
-  email: UserDTO['email'];
+  username: string;
+  email: string;
+  password: string;
+}
+
+export class LoginUserDTO {
+  email: string;
   password: string;
 }
