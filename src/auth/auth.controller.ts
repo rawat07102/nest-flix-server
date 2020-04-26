@@ -7,8 +7,8 @@ import { IRequestWithUser } from './types/RequestWithUser';
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  @UseGuards(LocalAuthGuard)
   @Post('login')
+  @UseGuards(LocalAuthGuard)
   login(@Req() req: IRequestWithUser) {
     return this.authService.login(req.user);
   }
