@@ -15,9 +15,9 @@ export class MyHttpService {
     return this.movieUrl + movieId || '';
   }
 
-  async get(url: string) {
+  async get<ResponseData>(url: string) {
     return await this.httpService
-      .get(url, {
+      .get<ResponseData>(url, {
         params: {
           api_key: this.configService.get('API_KEY'),
         },
@@ -25,9 +25,9 @@ export class MyHttpService {
       .toPromise();
   }
 
-  async getAll(urls: string[]) {
+  async getAll<ResponseData>(urls: string[]) {
     const httpRequests = urls.map(url => {
-      return this.get(url);
+      return this.get<ResponseData>(url);
     });
     const responses = await Promise.all(httpRequests);
     return responses.map(res => res.data);
