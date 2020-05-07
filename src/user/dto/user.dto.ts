@@ -7,10 +7,6 @@ export class UserDTO {
   likedMovies?: string[];
 }
 
-export class UserWithPassword extends UserDTO {
-  password: string;
-}
-
 export class CreateUserDTO {
   @IsString()
   username: string;
