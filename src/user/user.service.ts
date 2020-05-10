@@ -2,8 +2,6 @@ import * as bcrypt from 'bcrypt';
 import {
   Injectable,
   InternalServerErrorException,
-  HttpException,
-  HttpStatus,
   BadRequestException,
 } from '@nestjs/common';
 import { CreateUserDTO, UserDTO } from './dto/user.dto';
