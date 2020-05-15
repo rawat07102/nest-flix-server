@@ -12,7 +12,7 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   login(@Req() req: IRequestWithUser, @Res() res: Response) {
     const { access_token } = this.authService.login(req.user);
-    res.cookie('jwt', access_token);
+    res.cookie('jwt', access_token, { sameSite: 'none', secure: true });
     return res.json({ access_token });
   }
 }
