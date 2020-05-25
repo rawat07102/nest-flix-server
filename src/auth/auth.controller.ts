@@ -6,6 +6,7 @@ import {
   Res,
   HttpStatus,
 } from '@nestjs/common';
+import * as cookie from 'cookie';
 import { LocalAuthGuard } from './guard/local.auth-guard';
 import { AuthService } from './auth.service';
 import { IRequestWithUser } from './types/RequestWithUser';
@@ -20,7 +21,14 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   login(@Req() req: IRequestWithUser, @Res() res: Response) {
     const { access_token } = this.authService.login(req.user);
-    res.cookie('jwt', access_token, { sameSite: 'none', httpOnly: true });
+    const tokenCookie = cookie.serialize('jwt', access_token, {
+      sameSite: 'strict',
+      httpOnly: true,
+      secure: !!process.env.SECURE_COOKIE,
+      domain: '127.0.0.1',
+    });
+
+    res.setHeader('Set-Cookie', tokenCookie);
     return res.json({ access_token });
   }
 
