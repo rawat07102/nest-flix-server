@@ -25,7 +25,6 @@ export class AuthController {
       sameSite: 'strict',
       httpOnly: true,
       secure: !!process.env.SECURE_COOKIE,
-      domain: '127.0.0.1',
     });
 
     res.setHeader('Set-Cookie', tokenCookie);
