@@ -20,8 +20,12 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   login(@Req() req: IRequestWithUser, @Res() res: Response) {
     const { access_token } = this.authService.login(req.user);
-    res.cookie('jwt', access_token, { sameSite: 'none', httpOnly: true });
-    return res.json({ access_token });
+    res.cookie('jwt', access_token, {
+      sameSite: 'none',
+      httpOnly: true,
+      secure: !!process.env.SECURE_COOKIE,
+    });
+    return res.json({ userId: req.user.id });
   }
 
   @Post('logout')
