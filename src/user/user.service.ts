@@ -9,7 +9,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { IUser } from './interfaces/user.interface';
 import { MyHttpService } from 'src/http/http.service';
-import { MovieDto } from 'src/movie/dto/movie.dto';
+import { MovieDTO } from 'src/movie/dto/movie.dto';
 
 @Injectable()
 export class UserService {
@@ -96,7 +96,7 @@ export class UserService {
   async getLikedMoviesByUserId(userId: UserDTO['id']) {
     const { likedMovies } = await this.userModel.findById(userId);
     const urls = likedMovies.map(movieId => this.http.getMovieUrl(movieId));
-    const data = await this.http.getAll<MovieDto>(urls);
+    const data = await this.http.getAll<MovieDTO>(urls);
     return data;
   }
 }

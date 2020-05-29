@@ -1,6 +1,6 @@
 import { MovieGenres } from '../types/movie.enums';
 
-export interface MovieDto {
+export interface MovieDTO {
   genres: Genre[];
   production_countries: ProductionCountry[];
   production_companies: ProductionCompany[];
