@@ -1,13 +1,14 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { MovieService } from './movie.service';
 import { MoviesListType } from './types/movie.enums';
 
 @Controller('movie')
 export class MovieController {
-  constructor(private readonly movieService: MovieService) { }
+  constructor(private readonly movieService: MovieService) {}
 
   @Get('popular')
-  getPopularMovies() {
+  getPopularMovies(@Query() query) {
+    console.log(query);
     return this.movieService.getMoviesList(MoviesListType.POPULAR);
   }
 
