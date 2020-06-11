@@ -24,6 +24,8 @@ export class AuthController {
       sameSite: 'none',
       httpOnly: true,
       secure: !!process.env.SECURE_COOKIE,
+      path: '/',
+      domain: process.env.DOMAIN || '',
     });
     return res.json({ userId: req.user.id });
   }
