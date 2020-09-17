@@ -21,4 +21,9 @@ export class MovieController {
   getMovieDetails(@Param() params: { id: string }) {
     return this.movieService.findMovieById(params.id);
   }
+
+  @Get(':id/trailer')
+  getMovieTrailer(@Param() params: { id: string }) {
+    return this.movieService.getTrailer(params.id);
+  }
 }

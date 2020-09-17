@@ -28,6 +28,15 @@ export interface MovieDTO {
   vote_count: number;
 }
 
+export interface Trailer {
+  id: string;
+  key: string;
+  name: string;
+  site: string;
+  size: number;
+  type: string;
+}
+
 interface Genre {
   id: number;
   name: MovieGenres;
