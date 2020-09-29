@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 
 import { MoviesListType } from './types/movie.enums';
 import { MyHttpService } from 'src/http/http.service';
@@ -16,14 +16,15 @@ export class MovieService {
 
   async findMovieById(id: string) {
     const res = await this.http.get<MovieResponse>(`/movie/${id}`);
-    // const trailer = await this.http.get<{ results: Trailer[] }>(
-    //   `/movie/${id}/videos`,
-    // );
     return res.data;
   }
 
   async getTrailer(id: string) {
-    const res = await this.http.get<VideoResponse>(`/movie/${id}/videos`);
-    return res.data.results[0].key;
+    try {
+      const res = await this.http.get<VideoResponse>(`/movie/${id}/videos`);
+      return res.data.results[0].key;
+    } catch (err) {
+      throw new BadRequestException('Trailer does not Exist');
+    }
   }
 }
