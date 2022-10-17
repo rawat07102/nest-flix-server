@@ -1,7 +1,9 @@
-import { Exclude } from 'class-transformer';
+import { Exclude, instanceToPlain } from 'class-transformer';
+import * as bcrypt from "bcrypt"
 import { IsEmail } from 'class-validator';
-import { Column } from 'typeorm';
+import { BeforeInsert, Column } from 'typeorm';
 import { AbstractEntity } from './AbstractEntity';
+import { UserResponseObject } from 'src/user/dto/user.dto';
 
 export class UserEntity extends AbstractEntity {
   @Column()
@@ -17,4 +19,18 @@ export class UserEntity extends AbstractEntity {
 
   @Column('string', { array: true })
   likedMovies: string[];
+
+  @BeforeInsert()
+  async hashPassword() {
+    const hashedPassword = await bcrypt.hash(this.password, 10)
+    this.password = hashedPassword
+  }
+
+  async comparePassword(password: string) {
+    return bcrypt.compare(password, this.password)
+  }
+
+  toResponseObject(): UserResponseObject {
+    return <UserResponseObject>instanceToPlain(this)
+  }
 }

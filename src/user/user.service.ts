@@ -1,101 +1,77 @@
-import * as bcrypt from 'bcrypt';
 import {
   Injectable,
   InternalServerErrorException,
-  BadRequestException,
+  ConflictException,
 } from '@nestjs/common';
-import { CreateUserDTO, UserDTO } from './dto/user.dto';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { IUser } from './interfaces/user.interface';
-import { MyHttpService } from 'src/http/http.service';
-import { MovieDTO } from 'src/movie/dto/movie.dto';
+import { CreateUserDTO, UserResponseObject } from './dto/user.dto';
+import { MyHttpService } from '@http/http.service';
+import { MovieDTO } from '@movie/dto/movie.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { UserEntity } from '@lib/typeorm';
+import { Repository } from 'typeorm';
+import { IUserService } from './interfaces/user.interface';
 
 @Injectable()
-export class UserService {
+export class UserService implements IUserService {
   constructor(
-    @InjectModel('User') private userModel: Model<IUser>,
-    private http: MyHttpService,
+    @InjectRepository(UserEntity)
+    private readonly userRepo: Repository<UserEntity>,
+    private readonly http: MyHttpService,
   ) {}
 
-  clearCollection() {
-    this.userModel.collection.deleteMany({});
-    return 'succesfully cleared user collection';
-  }
-
-  async getAll() {
+  async findByEmail(email: string): Promise<UserResponseObject> {
     try {
-      const userArray = await this.userModel.find().select('-password');
-      return userArray.map(user => this.toDto(user));
-    } catch (err) {
-      throw new InternalServerErrorException(err);
-    }
-  }
-
-  async findByEmail(email: string) {
-    try {
-      const user = await this.userModel
-        .findOne({ email })
-        .select('-likedMovies');
-      return this.toDto(user);
+      const user = await this.userRepo
+        .createQueryBuilder()
+        .where({ email })
+        .select(['username', 'email', 'password'])
+        .getOne();
+      return user.toResponseObject();
     } catch (err) {
       throw new InternalServerErrorException(err, '[findByEmail]');
     }
   }
 
-  toDto(user: IUser): UserDTO {
-    const { email, username, id } = user;
-    return { email, username, id };
-  }
-
-  async create(user: CreateUserDTO): Promise<UserDTO> {
-    const { password, ...userDetails } = user;
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const alreadyExistingUser = await this.userModel.findOne({
-      $or: [{ email: user.email }, { username: user.username }],
-    });
+  async create(user: CreateUserDTO): Promise<UserResponseObject> {
+    const alreadyExistingUser = await this.userRepo
+      .createQueryBuilder()
+      .where({ email: user.email })
+      .orWhere({ username: user.username })
+      .getOne();
 
     if (alreadyExistingUser) {
       if (alreadyExistingUser.username === user.username) {
-        throw new BadRequestException(
+        throw new ConflictException(
           `user with username ${user.username} already exists`,
         );
       }
       if (alreadyExistingUser.email === user.email) {
-        throw new BadRequestException(
+        throw new ConflictException(
           `user with email ${user.email} already exists`,
         );
       }
     }
 
-    const newUser = await new this.userModel({
-      password: hashedPassword,
-      ...userDetails,
-    }).save();
-
-    return this.toDto(newUser);
+    const newUser = await this.userRepo.create(user).save();
+    return newUser.toResponseObject();
   }
 
-  async likeMovie(movieId: string, userId: UserDTO['id']) {
-    const user = await this.userModel.findById(userId);
+  async likeMovie(movieId: string, userId: UserEntity['id']): Promise<void> {
+    const user = await this.userRepo.findOneBy({ id: userId });
     const { likedMovies } = user;
 
     if (likedMovies.length && likedMovies.includes(movieId)) {
-      return true;
+      return;
     }
 
     likedMovies.push(movieId);
-
     user.likedMovies = likedMovies;
-
     await user.save();
-    return true;
   }
 
-  async getLikedMoviesByUserId(userId: UserDTO['id']) {
-    const { likedMovies } = await this.userModel.findById(userId);
-    const urls = likedMovies.map(movieId => this.http.getMovieUrl(movieId));
+  async getLikedMoviesByUserId(userId: UserEntity['id']): Promise<MovieDTO[]> {
+    const { likedMovies } = await this.userRepo.findOneBy({ id: userId });
+    const urls = likedMovies.map((movieId) => this.http.getMovieUrl(movieId));
     const data = await this.http.getAll<MovieDTO>(urls);
     return data;
   }

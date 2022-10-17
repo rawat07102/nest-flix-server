@@ -1,14 +1,15 @@
 import { IsString, IsEmail, Length } from 'class-validator';
 
-export class UserDTO {
-  id: string;
+export class UserResponseObject {
+  id: number;
   username: string;
   email: string;
-  likedMovies?: string[];
+  likedMovies: string[];
 }
 
 export class CreateUserDTO {
   @IsString()
+  @Length(8 ,32)
   username: string;
 
   @IsEmail()
@@ -19,6 +20,9 @@ export class CreateUserDTO {
 }
 
 export class LoginUserDTO {
+  @IsEmail()
   email: string;
+
+  @Length(8, 32)
   password: string;
 }

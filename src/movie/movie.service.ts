@@ -1,9 +1,9 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
+import { MyHttpService } from '@src/http/http.service';
+import { IQueryParams } from '@src/http/types/http.interface';
 
-import { MoviesListType } from './types/movie.enums';
-import { MyHttpService } from 'src/http/http.service';
 import { MovieResponse, VideoResponse } from './types/movie.response';
-import { IQueryParams } from 'src/http/types/http.interface';
+import { MoviesListType } from './types/movie.enums';
 
 @Injectable()
 export class MovieService {

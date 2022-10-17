@@ -11,7 +11,6 @@ import { JwtStrategy } from './strategy/jwt.strategy';
 @Module({
   imports: [
     JwtModule.registerAsync({
-      imports: [ConfigModule],
       useFactory: async (configService: ConfigService) =>
         ({
           secret: configService.get('JWT_SECRET'),

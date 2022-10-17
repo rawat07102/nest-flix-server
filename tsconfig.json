@@ -9,7 +9,16 @@
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./",
-    "incremental": true
+    "incremental": true,
+    "paths": {
+      "@src/*": ["./src/*"],
+      "@auth/*": ["./src/auth/*"],
+      "@user/*": ["./src/user/*"],
+      "@config/*": ["./src/config/*"],
+      "@lib/*": ["./src/lib/*"],
+      "@http/*": ["./src/http/*"],
+      "@movie/*": ["./src/movie/*"]
+    }
   },
   "exclude": ["node_modules", "dist"]
 }
