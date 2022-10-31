@@ -1,4 +1,4 @@
-import { UserDTO } from 'src/user/dto/user.dto';
+import { UserDTO } from '@user/dto/user.dto';
 
 export interface IPayload {
   username: UserDTO['username'];

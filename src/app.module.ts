@@ -9,7 +9,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal: true,
+      envFilePath: './env.development',
     }),
     TypeOrmModule.forRoot({
       url: process.env.DB_URL,

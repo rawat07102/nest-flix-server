@@ -6,6 +6,7 @@ import { ValidationError } from 'class-validator';
 import { TypeormStore } from 'connect-typeorm/out';
 import { DataSource } from 'typeorm';
 import { SessionEntity } from './lib/typeorm/entities/SessionEntity';
+import * as passport from "passport"
 
 async function bootstrap() {
   const { PORT, ORIGIN, SESSION_SECRET } = process.env;
@@ -21,6 +22,7 @@ async function bootstrap() {
       store: new TypeormStore().connect(sessionRepository),
     }),
   );
+  app.use(passport.session())
   app.useGlobalPipes(
     new ValidationPipe({
       exceptionFactory: (errors: ValidationError[]) => {

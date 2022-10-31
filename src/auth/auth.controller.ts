@@ -7,6 +7,7 @@ import {
   Res,
   Inject,
   Body,
+  Get,
 } from '@nestjs/common';
 import { IUserService } from '@src/user/interfaces/user.interface';
 import { Services } from '@src/lib/constants';
@@ -31,4 +32,7 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   async login(@Req() req: IRequestWithUser, @Res() res: Response) {
   }
+
+  @Get('status')
+  async status() {}
 }
