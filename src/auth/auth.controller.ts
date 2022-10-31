@@ -1,17 +1,34 @@
-import { Controller, Post, Req, UseGuards, Res } from '@nestjs/common';
+import { Response } from 'express';
+import {
+  Controller,
+  Post,
+  Req,
+  UseGuards,
+  Res,
+  Inject,
+  Body,
+} from '@nestjs/common';
+import { IUserService } from '@src/user/interfaces/user.interface';
+import { Services } from '@src/lib/constants';
 import { LocalAuthGuard } from './guard/local.auth-guard';
 import { AuthService } from './auth.service';
 import { IRequestWithUser } from './types/RequestWithUser';
-import { Response } from 'express';
+import { CreateUserDTO } from '@src/user/dto/user.dto';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    @Inject(Services.AUTH_SERVICE) private readonly authService: AuthService,
+    @Inject(Services.USER_SERVICE) private readonly userService: IUserService,
+  ) {}
+
+  @Post('register')
+  async registerUser(@Body() createUserDto: CreateUserDTO) {
+    return (await this.userService.create(createUserDto)).toResponseObject();
+  }
 
   @Post('login')
   @UseGuards(LocalAuthGuard)
-  login(@Req() req: IRequestWithUser, @Res() res: Response) {
-    const { access_token } = this.authService.login(req.user);
-    return res.json({ userId: req.user.id, access_token });
+  async login(@Req() req: IRequestWithUser, @Res() res: Response) {
   }
 }

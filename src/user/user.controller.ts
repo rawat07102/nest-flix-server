@@ -3,7 +3,6 @@ import {
   Get,
   Post,
   Body,
-  Delete,
   UseGuards,
   Req,
   Param,
@@ -17,15 +16,6 @@ import { Request } from 'express';
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
-
-  @Get('all')
-  async getAllUsers(@Req() req: Request) {
-    return this.userService.getAll();
-  }
-  @Delete('clear')
-  async clearUserCollection() {
-    return this.userService.clearCollection();
-  }
 
   @UseGuards(JwtAuthGuard)
   @Get('profile')

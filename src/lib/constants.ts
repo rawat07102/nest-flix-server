@@ -1,0 +1,8 @@
+export enum Routes {}
+
+export enum Services {
+  USER_SERVICE = 'USER_SERVICE',
+  AUTH_SERVICE = 'AUTH_SERVICE',
+  MOVIE_SERVICE = 'MOVIE_SERVICE',
+  HTTP_SERVICE = 'HTTP_SERVICE',
+}

@@ -4,9 +4,10 @@ import { IQueryParams } from '@src/http/types/http.interface';
 
 import { MovieResponse, VideoResponse } from './types/movie.response';
 import { MoviesListType } from './types/movie.enums';
+import { IMovieService } from './interfaces/movie.interface';
 
 @Injectable()
-export class MovieService {
+export class MovieService implements IMovieService {
   constructor(private readonly http: MyHttpService) {}
 
   async getMoviesList(listType: MoviesListType, query: IQueryParams = {}) {

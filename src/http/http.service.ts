@@ -3,9 +3,10 @@ import { AxiosResponse } from 'axios';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { IQueryParams, IUrl } from './types/http.interface';
+import { IHttpService } from './interfaces/http.interfaces';
 
 @Injectable()
-export class MyHttpService {
+export class MyHttpService implements IHttpService {
   movieUrl: string;
   constructor(
     private readonly axiosService: AxiosService,

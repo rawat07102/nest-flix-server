@@ -3,7 +3,7 @@ import {
   InternalServerErrorException,
   ConflictException,
 } from '@nestjs/common';
-import { CreateUserDTO, UserResponseObject } from './dto/user.dto';
+import { CreateUserDTO } from './dto/user.dto';
 import { MyHttpService } from '@http/http.service';
 import { MovieDTO } from '@movie/dto/movie.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -19,20 +19,20 @@ export class UserService implements IUserService {
     private readonly http: MyHttpService,
   ) {}
 
-  async findByEmail(email: string): Promise<UserResponseObject> {
+  async findByEmail(email: string): Promise<UserEntity> {
     try {
       const user = await this.userRepo
         .createQueryBuilder()
         .where({ email })
         .select(['username', 'email', 'password'])
         .getOne();
-      return user.toResponseObject();
+      return user;
     } catch (err) {
       throw new InternalServerErrorException(err, '[findByEmail]');
     }
   }
 
-  async create(user: CreateUserDTO): Promise<UserResponseObject> {
+  async create(user: CreateUserDTO): Promise<UserEntity> {
     const alreadyExistingUser = await this.userRepo
       .createQueryBuilder()
       .where({ email: user.email })
@@ -53,7 +53,7 @@ export class UserService implements IUserService {
     }
 
     const newUser = await this.userRepo.create(user).save();
-    return newUser.toResponseObject();
+    return newUser;
   }
 
   async likeMovie(movieId: string, userId: UserEntity['id']): Promise<void> {
