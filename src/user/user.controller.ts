@@ -4,27 +4,30 @@ import {
   Post,
   Body,
   UseGuards,
-  Req,
+  Req as AuthenticatedUser,
   Param,
 } from '@nestjs/common';
 import { CreateUserDTO } from './dto/user.dto';
 import { UserService } from './user.service';
-import { IRequestWithUser } from 'src/auth/types/RequestWithUser';
+import { LocalAuthGuard } from '@src/auth/guard/local.auth-guard';
+import { IAuthenticatedUser } from '@src/auth/interfaces/IAuthenticatedUser';
 
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(LocalAuthGuard)
   @Get('profile')
-  async getProfile(@Req() req: IRequestWithUser) {
-    return this.userService.findByEmail(req.user.email);
+  async getProfile(@AuthenticatedUser() authenticatedUser: IAuthenticatedUser) {
+    return this.userService.findByEmail(authenticatedUser.email);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(LocalAuthGuard)
   @Get('liked-movies')
-  async getLikedMovies(@Req() req: IRequestWithUser) {
-    return this.userService.getLikedMoviesByUserId(req.user.id);
+  async getLikedMovies(
+    @AuthenticatedUser() authenticatedUser: IAuthenticatedUser,
+  ) {
+    return this.userService.getLikedMoviesByUserId(authenticatedUser.id);
   }
 
   @Post('register')
@@ -32,13 +35,13 @@ export class UserController {
     return this.userService.create(user);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(LocalAuthGuard)
   @Post('like-movie/:movieId')
   async likeMovie(
     @Param('movieId') movieId: string,
-    @Req() req: IRequestWithUser,
+    @AuthenticatedUser() authenticatedUser: IAuthenticatedUser,
   ) {
-    await this.userService.likeMovie(movieId, req.user.id);
+    await this.userService.likeMovie(movieId, authenticatedUser.id);
     return true;
   }
 }

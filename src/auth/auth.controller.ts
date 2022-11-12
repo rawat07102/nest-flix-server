@@ -8,13 +8,17 @@ import {
   Inject,
   Body,
   Get,
+  HttpStatus,
+  HttpCode,
 } from '@nestjs/common';
 import { IUserService } from '@src/user/interfaces/user.interface';
 import { Services } from '@src/lib/constants';
 import { LocalAuthGuard } from './guard/local.auth-guard';
 import { AuthService } from './auth.service';
-import { IRequestWithUser } from './types/RequestWithUser';
 import { CreateUserDTO } from '@src/user/dto/user.dto';
+import { AuthenticatedUser } from './decorators/AuthenticatedUser.decorator';
+import { IAuthenticatedUser } from './interfaces/IAuthenticatedUser';
+import { IsAuthenticatedGuard } from './guard/isAuthenticated.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -30,9 +34,11 @@ export class AuthController {
 
   @Post('login')
   @UseGuards(LocalAuthGuard)
-  async login(@Req() req: IRequestWithUser, @Res() res: Response) {
-  }
+  async login(@AuthenticatedUser() user: IAuthenticatedUser) {}
 
   @Get('status')
-  async status() {}
+  @UseGuards(IsAuthenticatedGuard)
+  async status(@AuthenticatedUser() user: IAuthenticatedUser) {
+    return user;
+  }
 }
