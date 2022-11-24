@@ -4,9 +4,10 @@ import { UserService } from './user.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserEntity } from '@src/lib/typeorm';
 import { Services } from '@src/lib/constants';
+import { MovieModule } from '@src/movie/movie.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([UserEntity])],
+  imports: [TypeOrmModule.forFeature([UserEntity]), MovieModule],
   controllers: [UserController],
   providers: [
     {

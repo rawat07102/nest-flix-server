@@ -2,9 +2,8 @@ import { Module, Global } from '@nestjs/common';
 import { HttpModule, HttpService } from '@nestjs/axios';
 import { APP_FILTER } from '@nestjs/core';
 import { HttpExceptionFilter } from './http-exception.filter';
-import { Services } from '@src/lib/constants';
+import { Services } from '@lib/constants';
 
-@Global()
 @Module({
   imports: [
     HttpModule.register({
@@ -18,6 +17,16 @@ import { Services } from '@src/lib/constants';
     {
       provide: APP_FILTER,
       useClass: HttpExceptionFilter,
+    },
+    {
+      provide: Services.HTTP_SERVICE,
+      useClass: HttpService,
+    },
+  ],
+  exports: [
+    {
+      provide: Services.HTTP_SERVICE,
+      useClass: HttpService,
     },
   ],
 })

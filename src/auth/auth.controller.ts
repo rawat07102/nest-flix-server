@@ -1,29 +1,15 @@
-import { Response } from 'express';
-import {
-  Controller,
-  Post,
-  Req,
-  UseGuards,
-  Res,
-  Inject,
-  Body,
-  Get,
-  HttpStatus,
-  HttpCode,
-} from '@nestjs/common';
-import { IUserService } from '@src/user/interfaces/user.interface';
-import { Services } from '@src/lib/constants';
+import { Controller, Post, UseGuards, Inject, Body, Get } from '@nestjs/common';
+import { IUserService } from '@user/interfaces/user.interface';
+import { Routes, Services } from '@lib/constants';
 import { LocalAuthGuard } from './guard/local.auth-guard';
-import { AuthService } from './auth.service';
-import { CreateUserDTO } from '@src/user/dto/user.dto';
+import { CreateUserDTO } from './dto/CreateUserDTO';
 import { AuthenticatedUser } from './decorators/AuthenticatedUser.decorator';
 import { IAuthenticatedUser } from './interfaces/IAuthenticatedUser';
 import { IsAuthenticatedGuard } from './guard/isAuthenticated.guard';
 
-@Controller('auth')
+@Controller(Routes.AUTH)
 export class AuthController {
   constructor(
-    @Inject(Services.AUTH_SERVICE) private readonly authService: AuthService,
     @Inject(Services.USER_SERVICE) private readonly userService: IUserService,
   ) {}
 
@@ -34,7 +20,7 @@ export class AuthController {
 
   @Post('login')
   @UseGuards(LocalAuthGuard)
-  async login(@AuthenticatedUser() user: IAuthenticatedUser) {}
+  async login(@AuthenticatedUser() _user: IAuthenticatedUser) {}
 
   @Get('status')
   @UseGuards(IsAuthenticatedGuard)

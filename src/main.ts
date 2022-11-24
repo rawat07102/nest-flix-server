@@ -1,12 +1,12 @@
+import { AppModule } from './app.module';
 import * as session from 'express-session';
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
 import { ValidationPipe, BadRequestException } from '@nestjs/common';
 import { ValidationError } from 'class-validator';
 import { TypeormStore } from 'connect-typeorm/out';
 import { DataSource } from 'typeorm';
 import { SessionEntity } from './lib/typeorm/entities/SessionEntity';
-import * as passport from "passport"
+import * as passport from 'passport';
 
 async function bootstrap() {
   const { PORT, ORIGIN, SESSION_SECRET } = process.env;
@@ -16,6 +16,7 @@ async function bootstrap() {
   const sessionRepository = app.get(DataSource).getRepository(SessionEntity);
   app.use(
     session({
+      name: "FLIX_SESSION_ID",
       secret: SESSION_SECRET,
       resave: false,
       saveUninitialized: false,
@@ -23,6 +24,7 @@ async function bootstrap() {
     }),
   );
   app.use(passport.session())
+  app.use(passport.initialize())
   app.useGlobalPipes(
     new ValidationPipe({
       exceptionFactory: (errors: ValidationError[]) => {

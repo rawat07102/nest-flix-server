@@ -1,9 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
+import { Services } from '@src/lib/constants';
 import { UserService } from '@src/user/user.service';
 
 @Injectable()
 export class AuthService {
   constructor(
+    @Inject(Services.USER_SERVICE)
     private readonly userService: UserService,
   ) {}
 

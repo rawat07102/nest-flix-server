@@ -4,14 +4,16 @@ import {
   ConflictException,
   Inject,
 } from '@nestjs/common';
-import { CreateUserDTO } from './dto/user.dto';
+import { CreateUserDTO } from '@auth/dto/CreateUserDTO';
 import { MovieDTO } from '@movie/dto/movie.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from '@lib/typeorm';
 import { Repository } from 'typeorm';
 import { IUserService } from './interfaces/user.interface';
-import { Services } from '@src/lib/constants';
-import { IMovieService } from '@src/movie/interfaces/movie.interface';
+import { Services } from '@lib/constants';
+import { IMovieService } from '@movie/interfaces/movie.interface';
+import { UserResponseDTO } from './dto/UserResponseDTO';
+import { forkJoin, from, map, Observable, tap } from 'rxjs';
 
 @Injectable()
 export class UserService implements IUserService {
@@ -22,13 +24,30 @@ export class UserService implements IUserService {
     private readonly movieService: IMovieService,
   ) {}
 
+  async findById(id: number): Promise<UserEntity> {
+    return this.userRepo.findOneBy({ id });
+  }
+
+  getAll(limit = 10, skip = 0): Observable<UserResponseDTO[]> {
+    const usersObs = from(
+      this.userRepo.find({
+        take: limit,
+        skip,
+      }),
+    );
+    return usersObs.pipe(
+      map((users) => users.map((user) => user.toResponseObject())),
+    );
+  }
+
   async findByEmail(email: string): Promise<UserEntity> {
     try {
-      const user = await this.userRepo
-        .createQueryBuilder()
-        .where({ email })
-        .select(['username', 'email', 'password'])
-        .getOne();
+      const user = await this.userRepo.findOne({
+        where: {
+          email,
+        },
+        select: ['id', 'email', 'password', 'username'],
+      });
       return user;
     } catch (err) {
       throw new InternalServerErrorException(err, '[findByEmail]');
@@ -79,10 +98,11 @@ export class UserService implements IUserService {
     // return data;
 
     const { likedMovies } = await this.userRepo.findOneBy({ id: userId });
-    const res: MovieDTO[] = [];
-    this.movieService
-      .getMultiple(likedMovies)
-      .map((obs) => obs.forEach((value) => res.push(value)));
+    let res: MovieDTO[] = [];
+    forkJoin(this.movieService.getMultiple(likedMovies))
+      .subscribe((results) => {
+        res = results;
+      });
     return res;
   }
 }

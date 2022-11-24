@@ -1,10 +1,11 @@
 import { Exclude, instanceToPlain } from 'class-transformer';
 import * as bcrypt from 'bcrypt';
 import { IsEmail, IsString } from 'class-validator';
-import { BeforeInsert, Column } from 'typeorm';
+import { BeforeInsert, Column, Entity } from 'typeorm';
 import { AbstractEntity } from './AbstractEntity';
-import { UserResponseObject } from 'src/user/dto/user.dto';
+import { UserResponseDTO } from '@user/dto/UserResponseDTO';
 
+@Entity()
 export class UserEntity extends AbstractEntity {
   @Column()
   username: string;
@@ -18,7 +19,7 @@ export class UserEntity extends AbstractEntity {
   password: string;
 
   @IsString({ each: true })
-  @Column('string', { array: true })
+  @Column('varchar', { array: true, default: [] })
   likedMovies: string[];
 
   @BeforeInsert()
@@ -55,7 +56,7 @@ export class UserEntity extends AbstractEntity {
     return bcrypt.compare(password, this.password);
   }
 
-  toResponseObject(): UserResponseObject {
-    return <UserResponseObject>instanceToPlain(this);
+  toResponseObject(): UserResponseDTO {
+    return <UserResponseDTO>instanceToPlain(this);
   }
 }

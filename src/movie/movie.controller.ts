@@ -1,11 +1,15 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Controller, Get, Inject, Param, Query } from '@nestjs/common';
 import { MovieService } from './movie.service';
 import { MoviesListType } from './types/movie.enums';
 import { IQueryParams } from 'src/http/types/http.interface';
+import { Services } from '@src/lib/constants';
 
 @Controller('movie')
 export class MovieController {
-  constructor(private readonly movieService: MovieService) {}
+  constructor(
+    @Inject(Services.MOVIE_SERVICE)
+    private readonly movieService: MovieService,
+  ) {}
 
   @Get('popular')
   getPopularMovies(@Query() query: IQueryParams) {

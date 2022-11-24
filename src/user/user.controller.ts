@@ -6,20 +6,30 @@ import {
   UseGuards,
   Req as AuthenticatedUser,
   Param,
+  Inject,
 } from '@nestjs/common';
-import { CreateUserDTO } from './dto/user.dto';
+import { CreateUserDTO } from '@auth/dto/CreateUserDTO';
 import { UserService } from './user.service';
 import { LocalAuthGuard } from '@src/auth/guard/local.auth-guard';
 import { IAuthenticatedUser } from '@src/auth/interfaces/IAuthenticatedUser';
+import { Services } from '@src/lib/constants';
 
-@Controller('user')
+@Controller('users')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    @Inject(Services.USER_SERVICE)
+    private readonly userService: UserService,
+  ) {}
 
   @UseGuards(LocalAuthGuard)
   @Get('profile')
   async getProfile(@AuthenticatedUser() authenticatedUser: IAuthenticatedUser) {
     return this.userService.findByEmail(authenticatedUser.email);
+  }
+
+  @Get('all')
+  getAllUsers() {
+    return this.userService.getAll();
   }
 
   @UseGuards(LocalAuthGuard)
