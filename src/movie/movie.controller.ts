@@ -9,7 +9,12 @@ export class MovieController {
   constructor(
     @Inject(Services.MOVIE_SERVICE)
     private readonly movieService: MovieService,
-  ) {}
+  ) { }
+
+  @Get("latest")
+  async latest() {
+    return this.movieService.latest()
+  }
 
   @Get('popular')
   getPopularMovies(@Query() query: IQueryParams) {

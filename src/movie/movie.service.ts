@@ -1,4 +1,4 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { IQueryParams } from '@src/http/types/http.interface';
 import { map, Observable } from 'rxjs';
 
@@ -10,7 +10,13 @@ import { MovieDTO } from './dto/movie.dto';
 
 @Injectable()
 export class MovieService implements IMovieService {
-  constructor(private readonly http: HttpService) {}
+  constructor(private readonly http: HttpService) { }
+
+  latest() {
+    return this.http
+      .get("movie/latest")
+      .subscribe(v => console.log(v))
+  }
 
   getMoviesList(listType: MoviesListType, query: IQueryParams = {}) {
     return this.http

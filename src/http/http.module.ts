@@ -1,17 +1,29 @@
-import { Module, Global } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { HttpModule, HttpService } from '@nestjs/axios';
 import { APP_FILTER } from '@nestjs/core';
 import { HttpExceptionFilter } from './http-exception.filter';
 import { Services } from '@lib/constants';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
-    HttpModule.register({
-      baseURL: process.env.TMDB_URL,
-      headers: {
-        Authorization: `Bearer ${process.env.TMDB_AUTH_TOKEN}`,
-      },
-    }),
+    // HttpModule.register({
+    //   baseURL: process.env.TMDB_URL,
+    //   headers: {
+    //     Authorization: `Bearer ${process.env.TMDB_AUTH_TOKEN}`,
+    //   },
+    // }),
+    HttpModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => {
+        return ({
+          baseURL: configService.get("TMDB_AUTH_TOKEN"),
+          headers: {
+            Authorization: `Bearer: ${configService.get("TMDB_AUTH_TOKEN")}`,
+          }
+        })
+      }
+    })
   ],
   providers: [
     {
@@ -30,4 +42,4 @@ import { Services } from '@lib/constants';
     },
   ],
 })
-export class MyHttpModule {}
+export class MyHttpModule { }
