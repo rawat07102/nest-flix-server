@@ -5,6 +5,7 @@ import { MoviesListType } from '../types/movie.enums';
 import { MovieResponse } from '../types/movie.response';
 
 export interface IMovieService {
+  getLatest(): Observable<MovieResponse>
   getMoviesList(
     listType: MoviesListType,
     query: IQueryParams,

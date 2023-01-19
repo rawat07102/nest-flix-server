@@ -13,7 +13,7 @@ export class MovieController {
 
   @Get("latest")
   async latest() {
-    return this.movieService.latest()
+    return this.movieService.getLatest()
   }
 
   @Get('popular')

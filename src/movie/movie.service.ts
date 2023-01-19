@@ -12,10 +12,10 @@ import { MovieDTO } from './dto/movie.dto';
 export class MovieService implements IMovieService {
   constructor(private readonly http: HttpService) { }
 
-  latest() {
+  getLatest(): Observable<MovieResponse> {
     return this.http
-      .get("movie/latest")
-      .subscribe(v => console.log(v))
+      .get<MovieResponse>("movie/latest")
+      .pipe(map((value) => value.data));
   }
 
   getMoviesList(listType: MoviesListType, query: IQueryParams = {}) {
